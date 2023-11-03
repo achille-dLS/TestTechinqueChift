@@ -1,4 +1,5 @@
 import psycopg2
+from fastapi import FastAPI
 
 
 
@@ -22,28 +23,39 @@ try:
 
     cursor = conn.cursor()
 
-    # get all employees
-    print('get all employees')
-    # the request to execute
-    cursor.execute('SELECT * FROM employees.employe')
-    # getting the answer to the request
-    employees = cursor.fetchall()
-    # print answer
-    print(employees)
-
-    # get one employees
-    print('get 1st employe name')
-    # the request to execute
-    cursor.execute('SELECT * FROM employees.employe WHERE id = 1')
-    # getting the answer to the request
-    rs = cursor.fetchone()
-    employe1 = Employe(rs[0],rs[1],rs[2],rs[3],rs[4])
-    # print answer
-
-    print(employe1.nom)
 
 except (Exception, psycopg2.DatabaseError) as error:
     print(error)
 
-conn.close()
+
+
+
+app = FastAPI()
+
+@app.get('/')
+async def root():
+    return {'API working' : 'hey there buddy'}
+
+@app.get('/employees/')
+async def getAllEmployees():
+    # request to execute
+    cursor.execute('SELECT * FROM employees.employe')
+    # getting the answer to the request
+    employees = cursor.fetchall()
+    return employees
+
+@app.get('/employees/{id}')
+async def getEmployeById(id:int):
+    # the request to execute
+    querry = 'SELECT * FROM employees.employe WHERE id = ' + str(id)
+    cursor.execute(querry)
+    # getting the answer to the request
+    rs = cursor.fetchone()
+    employe1 = Employe(rs[0],rs[1],rs[2],rs[3],rs[4])
+    return employe1
+
+
+
+
+
 
