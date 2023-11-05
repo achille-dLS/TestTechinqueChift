@@ -34,9 +34,11 @@ async def getAllEmployees():
         cursor.execute('SELECT * FROM employees.employe')
         # getting the answer to the request
         employees = cursor.fetchall()
+        cursor.close()
         return employees
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        cursor.close()
 
 
 @app.get('/employees/{id}')
@@ -58,9 +60,11 @@ async def getEmployeById(id:int):
         # getting the answer to the request
         rs = cursor.fetchone()
         employe1 = Employe(rs[0],rs[1],rs[2],rs[3],rs[4])
+        cursor.close()
         return employe1
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        cursor.close()
 
 
 
