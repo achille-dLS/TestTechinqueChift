@@ -1,6 +1,14 @@
 import psycopg2
 from fastapi import FastAPI
 
+def connectToDB():
+    conn = psycopg2.connect(
+            host="localhost",
+            database="postgres",
+            user="postgres",
+            password="Achille.500"
+            )
+    return conn
 
 
 class Employe:
@@ -23,15 +31,11 @@ async def getAllEmployees():
 
     try:
         # connection a la db
-        conn = psycopg2.connect(
-            host="localhost",
-            database="postgres",
-            user="postgres",
-            password="Achille.500"
-            )
+        conn = connectToDB()
         cursor = conn.cursor()
         # request to execute
-        cursor.execute('SELECT * FROM employees.employe')
+        querry ='SELECT * FROM employees.employe'
+        cursor.execute(querry)
         # getting the answer to the request
         employees = cursor.fetchall()
         cursor.close()
@@ -45,15 +49,8 @@ async def getAllEmployees():
 async def getEmployeById(id:int):
     try:
         # connection a la db
-        conn = psycopg2.connect(
-            host="localhost",
-            database="postgres",
-            user="postgres",
-            password="Achille.500"
-            )
+        conn = connectToDB()
         cursor = conn.cursor()
-
-        
         # the request to execute
         querry = 'SELECT * FROM employees.employe WHERE id = ' + str(id)
         cursor.execute(querry)
