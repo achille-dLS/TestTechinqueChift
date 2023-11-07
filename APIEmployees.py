@@ -1,5 +1,9 @@
 import psycopg2
 from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Optional
+
+
 
 def connectToDB():
     conn = psycopg2.connect(
@@ -11,12 +15,12 @@ def connectToDB():
     return conn
 
 
-class Employe:
-    def __init__(self,id,nom,num_pro,email):
-        self.id = id
-        self.nom = nom
-        self.num_pro = num_pro
-        self.email = email
+class Partner(BaseModel):
+    id:int
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    email:Optional[str] = None
+        
 
 app = FastAPI()
 
@@ -25,8 +29,8 @@ app = FastAPI()
 async def root():
     return {'API working' : 'hey there buddy'}
 
-@app.get('/employees/')
-async def getAllEmployees():
+@app.get('/partners/')
+async def getAllPartners():
 
     try:
         # connection a la db
@@ -40,16 +44,18 @@ async def getAllEmployees():
         # getting the answer to the request
         employees = cursor.fetchall()
         cursor.close()
+        conn.close()
         return employees
     
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         cursor.close()
+        conn.close()
 
 
-@app.get('/employees/{id}')
-async def getEmployeById(id:int):
+@app.get('/partners/{id}')
+async def getPartnerById(id:int):
     try:
         # connection a la db
         conn = connectToDB()
@@ -61,14 +67,38 @@ async def getEmployeById(id:int):
 
         # getting the answer to the request
         rs = cursor.fetchone()
-        employe1 = Employe(rs[0],rs[1],rs[2],rs[3])
         cursor.close()
-        return employe1
+        conn.close()
+        return rs
     
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         cursor.close()
+        conn.close()
+
+@app.post('/partners/')
+async def addPartner(partner:Partner):
+    try:
+        # connection a la db
+        conn = connectToDB()
+        cursor = conn.cursor()
+
+        # the request to execute
+        querry = f"INSERT INTO employees.employe (id,nom,num_pro,email) " \
+        f"VALUES ({partner.id}, '{partner.name}', '{partner.phone}', '{partner.email}');"
+        res = cursor.execute(querry)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return res
+    
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        cursor.close()
+        conn.close()
+        
 
 
 
