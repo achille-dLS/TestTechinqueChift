@@ -1,6 +1,7 @@
 import xmlrpc.client 
 import json
 import requests
+from APIEmployees import Partner
 
 url = 'https://chift-employees.odoo.com'
 db = 'chift-employees'
@@ -29,6 +30,10 @@ print("get partners From Odoo : OK \n\n ")
 odooPartnersDict = {}
 for p in partnersInfo:
     id = p["id"]
+    if 'phone' not in p or not isinstance(p['phone'], str):
+            p['phone'] = ''
+    if 'email' not in p or not isinstance(p['email'], str):
+            p['email'] = ''
     odooPartnersDict[id] = p
 
 # get partners in DB
@@ -41,8 +46,12 @@ print("get partners From BD : OK \n\n ")
 DBPartnersDict = {}
 for p in DBPartners:
     id = p[0]
-    DBPartnersDict[id] = p
-
+    DBPartnersDict[id] = {
+    "id": p[0],
+    "name": p[1],
+    "phone": p[2],
+    "email": p[3]
+    }
 
 print("updating DB....")
 
@@ -50,18 +59,21 @@ for id in odooPartnersDict:
     OdPart = odooPartnersDict.get(id)
     BdPart = DBPartnersDict.get(id)
     #check if all partners are in DB
-    if OdPart['id']!=BdPart[0]:
-        OdPart = odooPartnersDict.get(id)
-        if 'phone' not in OdPart or not isinstance(OdPart['phone'], str):
-            OdPart['phone'] = ''
-        if 'email' not in OdPart or not isinstance(OdPart['email'], str):
-            OdPart['email'] = ''
-        print("missing partner with id : ",id, odooPartnersDict.get(id))
-        response = requests.post("http://localhost:8000/partners/", json=odooPartnersDict.get(id))
+    if BdPart == None or OdPart['id']!=BdPart['id']:
+        print("missing partner with id : ",id, OdPart)
+        response = requests.post("http://localhost:8000/partners/", json=OdPart)
         print("response Code : ",response.status_code)
     # check if content BD partner are Up to date
-    if OdPart != BdPart:
-            print("DB not up to date for partner n° :",id)
+    elif OdPart != BdPart:
+        ## update tous les champs de ce truc bidule
+        print("DB not up to date for partner n° :",id)
+        print("bdpart : ",BdPart)
+        print("odPart : ",OdPart)
+    
+    ## ajouter façon de vérifier que la db ne garde pas des trucs inutile (partner qui a été supprimé)
+    ## pour le moment idée : array de tous les ID de la DB, quand on en passe un, on le retire de cette liste, a la fin on fait un delete sur chaque ID qui reste dans la liste
+
+
 
 
 print("\n\n_______________END UPDATE DB ________________\n\n")
