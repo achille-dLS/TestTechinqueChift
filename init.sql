@@ -5,6 +5,5 @@ CREATE TABLE employees.employe (
 	id SERIAL PRIMARY KEY,
 	nom VARCHAR(50),
 	num_pro VARCHAR(13),
-	email VARCHAR (255),
-	departement varchar (255)
+	email VARCHAR (255)
 );
