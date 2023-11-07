@@ -85,8 +85,7 @@ async def addPartner(partner:Partner):
         cursor = conn.cursor()
 
         # the request to execute
-        querry = f"INSERT INTO employees.employe (id,nom,num_pro,email) " \
-        f"VALUES ({partner.id}, '{partner.name}', '{partner.phone}', '{partner.email}');"
+        querry = f"INSERT INTO employees.employe (id,name,phone,email) VALUES ({partner.id}, '{partner.name}', '{partner.phone}', '{partner.email}');"
         res = cursor.execute(querry)
         conn.commit()
         cursor.close()
@@ -99,6 +98,47 @@ async def addPartner(partner:Partner):
         cursor.close()
         conn.close()
         
+@app.put('/partners/{partnerID}')
+async def addPartner(partnerID:int, partner:Partner):
+    try:
+        # connection a la db
+        conn = connectToDB()
+        cursor = conn.cursor()
+
+        # the request to execute
+        querry = f"UPDATE employees.employe SET name = '{partner.name}', phone = '{partner.phone}', email =  '{partner.email}' WHERE id = {partnerID};"
+        res = cursor.execute(querry)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return res
+    
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        cursor.close()
+        conn.close()
+
+@app.delete('/partners/{partnerID}')
+async def addPartner(partnerID:int):
+    try:
+        # connection a la db
+        conn = connectToDB()
+        cursor = conn.cursor()
+
+        # the request to execute
+        querry = f"DELETE FROM employees.employe WHERE id = {partnerID};"
+        res = cursor.execute(querry)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return res
+    
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        cursor.close()
+        conn.close()
 
 
 

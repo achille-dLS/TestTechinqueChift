@@ -41,7 +41,6 @@ response = requests.get('http://127.0.0.1:8000/partners')
 DBPartners = response.json()
 print("get partners From BD : OK \n\n ")
 
-
 #place partners in Dictionary
 DBPartnersDict = {}
 for p in DBPartners:
@@ -67,14 +66,18 @@ for id in odooPartnersDict:
     elif OdPart != BdPart:
         ## update tous les champs de ce truc bidule
         print("DB not up to date for partner n° :",id)
-        print("bdpart : ",BdPart)
-        print("odPart : ",OdPart)
-    
-    ## ajouter façon de vérifier que la db ne garde pas des trucs inutile (partner qui a été supprimé)
-    ## pour le moment idée : array de tous les ID de la DB, quand on en passe un, on le retire de cette liste, a la fin on fait un delete sur chaque ID qui reste dans la liste
+        print("IN DATA BASE : ",BdPart)
+        print("IN ODOO : ",OdPart)
+        response = requests.put("http://localhost:8000/partners/"+str(id), json=OdPart)
+        print("response Code : ",response.status_code)
+    # remove Partner from Dictionary in order to only retain the ones that aren't in Odoo
+    DBPartnersDict.pop(id)
 
-
-
+#Remove every useless DB Partner
+for id in DBPartnersDict:
+    print("DELETING personel with ID "+str(id)+ " ("+ str(DBPartnersDict.get(id))+")"+" cause : not in Odoo")
+    response = requests.delete("http://localhost:8000/partners/"+str(id))
+    print("response Code : ",response.status_code)
 
 print("\n\n_______________END UPDATE DB ________________\n\n")
 
