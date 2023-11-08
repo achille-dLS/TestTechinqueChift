@@ -5,10 +5,11 @@ from pydantic import BaseModel
 from typing import Optional
 import bcrypt
 
-
+## API authentification
 APIusername = "admin"  
-APIpassword = b'$2y$10$t6ueu.1FuvyBf6iFegQEguq3XF1G.epvn2LvxbS5rcDsr7hvYDKtq' 
+APIpassword = "admin" 
 
+## function to connect to DB
 def connectToDB():
     conn = psycopg2.connect(
             host="localhost",
@@ -18,33 +19,36 @@ def connectToDB():
             )
     return conn
 
-
+## partnerClass for POST
 class Partner(BaseModel):
     id:int
     name: Optional[str] = None
     phone: Optional[str] = None
     email:Optional[str] = None
         
-
+## DEFINE APP and Security
 app = FastAPI()
 security = HTTPBasic()
 
 def verify_password(plain_password, hashed_password):
-    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password)
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
-    if credentials.username == APIusername and verify_password(credentials.password, APIpassword):
+    if credentials.username == APIusername and verify_password(APIpassword,credentials.password,):
         return True
     else:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
-## REQUETES API
+
+## BASIC GET
 @app.get('/')
 async def root():
     return {'API working' : 'hey there buddy'}
 
+
+## GET ALL PARTNERS
 @app.get('/partners/')
 async def getAllPartners():
 
@@ -70,6 +74,8 @@ async def getAllPartners():
         conn.close()
 
 
+
+## GET  PARTNER BY ID
 @app.get('/partners/{id}')
 async def getPartnerById(id:int):
     try:
@@ -93,6 +99,8 @@ async def getPartnerById(id:int):
         cursor.close()
         conn.close()
 
+
+## ADD NEW PARTNER
 @app.post('/partners/')
 async def addPartner(partner:Partner, authenticated: bool = Depends(authenticate_user)):
     try:
@@ -114,8 +122,9 @@ async def addPartner(partner:Partner, authenticated: bool = Depends(authenticate
         cursor.close()
         conn.close()
         
+## UPDATE PARTNER BY ID
 @app.put('/partners/{partnerID}')
-async def addPartner(partnerID:int, partner:Partner, authenticated: bool = Depends(authenticate_user)):
+async def updatePartner(partnerID:int, partner:Partner, authenticated: bool = Depends(authenticate_user)):
     try:
         # connection a la db
         conn = connectToDB()
@@ -135,8 +144,10 @@ async def addPartner(partnerID:int, partner:Partner, authenticated: bool = Depen
         cursor.close()
         conn.close()
 
+
+## DELETE PARTNER
 @app.delete('/partners/{partnerID}')
-async def addPartner(partnerID:int, authenticated: bool = Depends(authenticate_user)):
+async def deletePartner(partnerID:int, authenticated: bool = Depends(authenticate_user)):
     try:
         # connection a la db
         conn = connectToDB()
