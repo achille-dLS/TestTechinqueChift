@@ -1,7 +1,9 @@
 import psycopg2
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from typing import Optional
+
 
 
 
@@ -23,6 +25,17 @@ class Partner(BaseModel):
         
 
 app = FastAPI()
+security = HTTPBasic()
+
+# Fonction de vérification d'authentification
+def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = "admin"  # Remplacez par votre nom d'utilisateur
+    correct_password = "admin"  # Remplacez par votre mot de passe
+    if credentials.username == correct_username and credentials.password == correct_password:
+        return True
+    else:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 
 ## REQUETES API
 @app.get('/')
@@ -78,7 +91,7 @@ async def getPartnerById(id:int):
         conn.close()
 
 @app.post('/partners/')
-async def addPartner(partner:Partner):
+async def addPartner(partner:Partner, authenticated: bool = Depends(authenticate_user)):
     try:
         # connection a la db
         conn = connectToDB()
@@ -99,7 +112,7 @@ async def addPartner(partner:Partner):
         conn.close()
         
 @app.put('/partners/{partnerID}')
-async def addPartner(partnerID:int, partner:Partner):
+async def addPartner(partnerID:int, partner:Partner, authenticated: bool = Depends(authenticate_user)):
     try:
         # connection a la db
         conn = connectToDB()
@@ -120,7 +133,7 @@ async def addPartner(partnerID:int, partner:Partner):
         conn.close()
 
 @app.delete('/partners/{partnerID}')
-async def addPartner(partnerID:int):
+async def addPartner(partnerID:int, authenticated: bool = Depends(authenticate_user)):
     try:
         # connection a la db
         conn = connectToDB()
