@@ -12,3 +12,7 @@ sécurité sur les add, update et delete
 récupère les données de Odoo
 récupère les données de la DB via l'API
 mets la DB a jour via l'API
+
+# ce qu'il manque
+la répétition du script avec un cron
+déploiment de l'app sur une solution d'hébergement car les app comme Azure et goolge cloud platform demandent une carte bancaire mastercard pour l'authentification et je n'en ai pas
