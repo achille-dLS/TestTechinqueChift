@@ -58,7 +58,7 @@ async def getAllPartners():
         cursor = conn.cursor()
 
         # request to execute
-        querry ='SELECT * FROM employees.employe'
+        querry ='SELECT * FROM partners.partner'
         cursor.execute(querry)
         
         # getting the answer to the request
@@ -84,7 +84,7 @@ async def getPartnerById(id:int):
         cursor = conn.cursor()
 
         # the request to execute
-        querry = 'SELECT * FROM employees.employe WHERE id = ' + str(id)
+        querry = 'SELECT * FROM partners.partner WHERE id = ' + str(id)
         cursor.execute(querry)
 
         # getting the answer to the request
@@ -109,7 +109,7 @@ async def addPartner(partner:Partner, authenticated: bool = Depends(authenticate
         cursor = conn.cursor()
 
         # the request to execute
-        querry = f"INSERT INTO employees.employe (id,name,phone,email) VALUES ({partner.id}, '{partner.name}', '{partner.phone}', '{partner.email}');"
+        querry = f"INSERT INTO partners.partner (id,name,phone,email) VALUES ({partner.id}, '{partner.name}', '{partner.phone}', '{partner.email}');"
         res = cursor.execute(querry)
         conn.commit()
         cursor.close()
@@ -131,7 +131,7 @@ async def updatePartner(partnerID:int, partner:Partner, authenticated: bool = De
         cursor = conn.cursor()
 
         # the request to execute
-        querry = f"UPDATE employees.employe SET name = '{partner.name}', phone = '{partner.phone}', email =  '{partner.email}' WHERE id = {partnerID};"
+        querry = f"UPDATE partners.partner SET name = '{partner.name}', phone = '{partner.phone}', email =  '{partner.email}' WHERE id = {partnerID};"
         res = cursor.execute(querry)
         conn.commit()
         cursor.close()
@@ -154,7 +154,7 @@ async def deletePartner(partnerID:int, authenticated: bool = Depends(authenticat
         cursor = conn.cursor()
 
         # the request to execute
-        querry = f"DELETE FROM employees.employe WHERE id = {partnerID};"
+        querry = f"DELETE FROM partners.partner WHERE id = {partnerID};"
         res = cursor.execute(querry)
         conn.commit()
         cursor.close()

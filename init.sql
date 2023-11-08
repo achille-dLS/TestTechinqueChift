@@ -1,15 +1,15 @@
-DROP SCHEMA IF EXISTS employees CASCADE;
-CREATE SCHEMA employees;
+DROP SCHEMA IF EXISTS partners CASCADE;
+CREATE SCHEMA partners;
 
-CREATE TABLE employees.employe (
+CREATE TABLE partners.partner (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(255),
 	phone VARCHAR(255),
 	email VARCHAR (255)
 );
 
-SELECT * FROM employees.employe;
+SELECT * FROM partners.partner;
 
-UPDATE employees.employe
+UPDATE partners.partner
 SET nom = 'NouveauNom', num_pro = 'NouveauNumero', email = 'nouveau@email.com'
 WHERE id = 10;
