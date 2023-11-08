@@ -3,9 +3,11 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from typing import Optional
+import bcrypt
 
 
-
+APIusername = "admin"  
+APIpassword = b'$2y$10$t6ueu.1FuvyBf6iFegQEguq3XF1G.epvn2LvxbS5rcDsr7hvYDKtq' 
 
 def connectToDB():
     conn = psycopg2.connect(
@@ -27,11 +29,12 @@ class Partner(BaseModel):
 app = FastAPI()
 security = HTTPBasic()
 
-# Fonction de vérification d'authentification
+def verify_password(plain_password, hashed_password):
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password)
+
+
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = "admin"  # Remplacez par votre nom d'utilisateur
-    correct_password = "admin"  # Remplacez par votre mot de passe
-    if credentials.username == correct_username and credentials.password == correct_password:
+    if credentials.username == APIusername and verify_password(credentials.password, APIpassword):
         return True
     else:
         raise HTTPException(status_code=401, detail="Unauthorized")

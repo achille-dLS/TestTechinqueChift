@@ -1,12 +1,12 @@
 import xmlrpc.client 
-import json
 import requests
-from APIEmployees import Partner
 
 url = 'https://chift-employees.odoo.com'
 db = 'chift-employees'
 username = 'achilledelimburgstirum@gmail.com'
 password = 'mdp1234'
+
+
 auth = ('admin','admin')
 
 common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
@@ -57,28 +57,29 @@ print("updating DB....")
 
 for id in odooPartnersDict:
     OdPart = odooPartnersDict.get(id)
-    BdPart = DBPartnersDict.get(id)
+    DBPart = DBPartnersDict.get(id)
 
 
-    #check if all partners are in DB
-    if BdPart == None or OdPart['id']!=BdPart['id']:
+    #check if partner is in DB
+    if DBPart == None:
         print("missing partner with id : ",id, OdPart)
         response = requests.post("http://localhost:8000/partners/", json=OdPart, auth=auth)
         print("response Code : ",response.status_code)
 
 
-    # check if content BD partner are Up to date
-    elif OdPart != BdPart:
-        ## update tous les champs de ce truc bidule
+    # check if content BD partner is Up to date
+    elif OdPart != DBPart:
+        ## Update DB 
         print("DB not up to date for partner n° :",id)
-        print("IN DATA BASE : ",BdPart)
+        print("IN DATA BASE : ",DBPart)
         print("IN ODOO : ",OdPart)
         response = requests.put("http://localhost:8000/partners/"+str(id), json=OdPart, auth=auth)
         print("response Code : ",response.status_code)
+        DBPartnersDict.pop(id)
 
-
-    # remove Partner from Dictionary in order to only retain the ones that aren't in Odoo
-    DBPartnersDict.pop(id)
+    elif OdPart['id']==DBPart['id']:
+        # remove Partner from DBDictionary in order to only retain the ones that aren't in Odoo
+        DBPartnersDict.pop(id)
 
 #Remove every useless DB Partner
 for id in DBPartnersDict:
