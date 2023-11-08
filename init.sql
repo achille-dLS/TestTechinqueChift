@@ -11,5 +11,8 @@ CREATE TABLE partners.partner (
 SELECT * FROM partners.partner;
 
 UPDATE partners.partner
-SET nom = 'NouveauNom', num_pro = 'NouveauNumero', email = 'nouveau@email.com'
+SET name = 'NouveauNom', phone = 'NouveauNumero', email = 'nouveau@email.com'
 WHERE id = 10;
+
+INSERT INTO partners.partner (name, phone, email)
+VALUES ('Mr TooMuch', +32547885412, 'TooMuch@gmail.com');
