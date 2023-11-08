@@ -9,11 +9,11 @@ Test technique pour l'entretien chez Chift.
 
 ## L'API
 L'API offre les fonctionnalités CRUD classiques :
-- "getall" : Récupère tous les éléments.
-- "getone" : Récupère un élément par son identifiant.
-- "add" : Ajoute un nouvel élément.
-- "update" : Met à jour un élément.
-- "delete" : Supprime un élément.
+- "getall" : Récupère tous les partners.
+- "getone" : Récupère un partners par son id.
+- "add" : Ajoute un nouvel partners.
+- "update" : Met à jour un partners.
+- "delete" : Supprime un partners.
 
 La sécurité est mise en place pour les requêtes de type "add," "update," et "delete."
 
