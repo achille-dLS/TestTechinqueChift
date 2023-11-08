@@ -1,4 +1,3 @@
-Voici le fichier README.md corrigé avec l'orthographe et la mise en page améliorés :
 
 # Test Technique Chift
 Test technique pour l'entretien chez Chift.
